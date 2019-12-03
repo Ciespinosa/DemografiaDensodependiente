@@ -1,0 +1,13 @@
+library(DiagrammeR)
+grViz("
+      digraph boxes_and_circles {
+      node[shape = circle, fillcolor= grey,fontsize = 12, fixedsize = true,
+        width = 0.9]
+      graph[rankdir=LR]
+     
+      seed;small;big    
+      
+      seed->small[label='P_21',fontsize = 8]; small->big [label='P_32',fontsize = 8]; big->seed[label='F3',fontsize = 8]; small->seed[label='F2',fontsize = 8]; big->big [label='P_33',fontsize = 8]
+           
+             }
+       ")

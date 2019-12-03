@@ -1,0 +1,543 @@
+---
+title: "Demografia Denso-independiente"
+author: "Carlos Iván Espinosa"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo=FALSE, warning=FALSE, fig.height=3*0.8, fig.width=20.8}
+library(png)
+library(grid)
+img <- readPNG("images/Logo.png")
+ grid.raster(img)
+```
+#__Introducción__
+
+La demografía es el estudio de las poblaciones, con especial atención a la edad o la estructura de estadios.
+
+--
+- Procede de los actuarios, que permitian a los gobiernos tener un control sobre la población.
+
+--
+<br></br>
+- La demografía de una población se refiere a la estructura de edades (o etapas)  y a las tasas demográficas asociados con esas edades o etapas.
+
+--
+<br></br>
+- La demografía es, en parte, el estudio de cómo las tasas demográficas varían entre las edades o etapas, y las consecuencias de esas diferencias en el crecimiento de la población
+
+---
+background-image: url("images/IMG.png")
+background-position: 50% 50%
+background-size: 100%
+class: center, bottom, inverse
+
+# ¿Cómo usar la estructura demográfica para calcular el tamaño de la población?
+
+---
+
+# Calcular el tamaño
+
+--
+- Las _tablas de vida_ son listas de parámetros demográficos importantes, como las tasas de supervivencia, de nacimientos y defunciones de cada edad o clase de edad
+
+--
+<br></br>
+- Una aproximación más flexible es la de algebra de matrices (Matrices de Leslie)
+
+--
+<br></br>
+- Este enfoque es esencial cuando los individuos no proceden a través de etapas de una manera secuencial simple, por ejemplo, individuos que pueden volver a una etapa "anterior".
+
+---
+# __Un ejemplo hipotético__
+
+Piense que está manejando una pequeña reserva natural y se observa que una nueva especie invasora, _hierba moteada_  (__*Capitalia globifera*__), está surgiendo en todas partes. 
+
+--
+<br></br>
+__¿Crees que es posible que se necesite establecer algunas medidas de control?__
+
+--
+<br></br>
+
+Debemos saber su ciclo de vida y el crecimiento de la población. 
+
+
+---
+#Historia de vida
+
+Un examen cuidadoso de las flores revela flores perfectas, y se  encuentra en la literatura que la _hierba moteada_ es una planta perenne capaz de auto-fertilización. Las semillas germinan a principios del otoño, crecen la siguiente primavera y a principios del verano se convierte en un adulto pequeño que tiene entre 2-3 hojas y que a veces producen semillas. A partir del segundo año, si las plantas sobreviven, crecen a adultos de gran tamaño que tienen cuatro o más hojas, en este estadio es cuando producen la mayor parte de sus semillas. Normalmente las semillas no forman bancos de semillas por lo que las semillas que no germinan mueren.
+
+--
+.center[![](images/Diagrama.png)]
+
+---
+# _gráfico de ciclo de vida_
+
+<br></br>
+<br></br>
+Estos gráficos pueden mostrar las transiciones entre las diferentes etapas de desarrollo y las fecundidades de cada una de estas etapas.
+
+---
+#Ejercicio 1
+
+- Realizar un gráfico de historia de vida basados en los siguientes datos.
+
+__*Guzmania lingulata ciclo de vida*__
+
+Es una planta perenne capaz de auto-fertilización. Las plantas fructifican en el verano y germinan durante el invierno y permanecen como plántulas durante un año, el siguiente año se convierten en adultos infértiles, y pasado un año más en adultos fértiles. Únicamente los adultos fértiles producen semillas. Algunos adultos infértiles necesitan más de un año para llegar a adultos fértiles por lo que pueden permanecer como adultos infértiles. Los adultos fértiles una vez han florecido se marchitan y generan brotes que se pueden considerar como plántulas.
+
+---
+#__Proyección de una matriz poblacional__
+
+La matriz de transición de población es simplemente una colección organizada de la contribución per cápita de cada etapa _j_ para la siguiente etapa _i_ en el intervalo de tiempo especificado (a menudo un año). Estas contribuciones, o transiciones, consisten en (i) la probabilidad de que un individuo en la etapa _j_  se convierta, en un año, en un individuo de la etapa _i_ el próximo año, y (ii) las  fecundidades per cápita para las etapas reproductivas.
+
+<br></br>
+
+$$\left(\begin{array}
+{rrr}
+0 & F_2 & F_3 \\
+P_{21} & 0 & 0 \\
+0 & P_{32} & P_{33}
+\end{array}\right)$$
+
+
+---
+#Matriz de transición 
+
+--
+
+$P_{21}$ en nuestra matriz, es la probabilidad de que un individuo en la etapa 1 (semillas; representada por la columna 1) permanece en el próximo período de censo y llega a la etapa 2 (1 año de edad, adulto pequeño, representado por la fila 2). 
+
+--
+
+$P_{32}$ es la probabilidad de que un individuo en la etapa 2 (1 año de edad, adulto pequeño) ha llegado a la etapa adulta grande en el próximo período de censo. 
+
+--
+
+Las fecundidades no son probabilidades, se refieren a la contribución per cápita de propágulos de la etapa adulta a la etapa de semilla. 
+
+---
+#__*Una breve introducción a las matrices*__
+
+Las matrices son referidas por sus filas y columnas. Así, una matriz con tres filas y una columna es una matriz 3 × 1. 
+
+Las matrices se componen de elementos; un elemento de una matriz es dado por su fila y columna. El elemento de la segunda fila y la primera columna es $a_{21}$. 
+
+---
+#Algebra de matrices
+
+$$\mathbf{A} = \left(\begin{array}
+{rr}
+a & b \\
+c & d 
+\end{array}\right);\mathbf{B} = \left(\begin{array}
+{rr}
+m & o \\
+n & p 
+\end{array}\right)$$
+
+$$\mathbf{AB} = \left(\begin{array}
+{rr}
+(am+bn) & (ao+bp) \\
+(cm+dn) & (co+dp) 
+\end{array}\right)$$
+
+---
+#Usando R
+
+```{r}
+M <- matrix(1:4, nr = 2) 
+M
+N <- matrix(c(10, 20, 30, 40), nr = 2) 
+N
+```
+
+```{r}
+1*10+2*30
+```
+---
+#Algebra de matrices en R
+
+Multiplicamos las matrices usando %*% que significa multiplicación de matrices 
+
+<br></br>
+
+```{r}
+M %*% N
+```
+
+---
+
+#El trabajo
+<br></br>
+<br></br>
+Como responsable del área usted prepara un muestreo y monta parcelas permanentes de $1m^2$ con el fin de hacer el seguimiento de esta población.  Durante el periodo de fructificación se hace el muestreo por dos años.  Se etiquetan y marcan todas las plantas que se encuentran en estado _plantas pequeñas_ y _plantas grandes_. Adicionalmente, se cuenta la cantidad de frutos y semillas que producen las plantas en las diferentes etapas de desarrollo.
+
+<br></br>
+---
+#Los resultados
+
+--
+- Germinación de semillas: de 100 semillas 30 germinaron
+
+--
+- En el primer muestreo tuvimos
+    * Plantas grandes 20
+    * Plantas pequeñas 200
+
+--
+- En el segundo muestreo
+    * Plantas grandes 18 de las antiguas, 100 nuevas
+    * Plantas pequeñas 300
+    * Cada planta pequeña produce en promedio 0.5 semillas
+    * Cada planta grande produce en promedio 20 semillas
+
+--
+- Calculemos la probabilidad de transición y construyamos la matriz
+
+
+---
+#La matriz de transición
+
+<br></br>
+
+$$\mathbf{A} = \left(\begin{array}
+{rrr}
+0 & F_2 & F_3 \\
+P_{21} & 0 & 0 \\
+0 & P_{32} & P_{33}
+\end{array}\right) = \left(\begin{array}
+{rrr}
+0 & 0.5 & 20 \\
+0.3 & 0 & 0 \\
+0 & 0.5 & 0.9
+\end{array}\right)$$
+
+
+
+---
+# Proyectamos la población
+
+$$\left(\begin{array}
+{rrr}
+0 & 0.5 & 20 \\
+0.3 & 0 & 0 \\
+0 & 0.5 & 0.9
+\end{array}\right) \left(\begin{array}
+{r}
+100 \\
+250 \\
+50
+\end{array}\right) = \left(\begin{array}
+{rrr}
+(0*100) + (0.5*250) + (20*50) \\
+(0.3*100) + (0*250) + (0*50) \\
+(0*100) + (0.5*250) + 0.9*50)
+\end{array}\right) = \left(\begin{array}
+{r}
+1125 \\
+30 \\
+170
+\end{array}\right)$$
+
+---
+#Proyectamos a varios años
+
+Obtenemos una matriz de transición y una de abundancia
+
+```{r}
+A <- matrix(c(0, 0.5, 20, 0.3, 0, 0, 0, 0.5, 0.9), nr = 3,
+            byrow = TRUE) 
+N0 <- matrix(c(100, 250, 50), ncol = 1)
+```
+
+---
+#Proyectamos la matriz
+
+```{r}
+
+years <- 6
+N.projections <- matrix(0, nrow = nrow(A),
+                      ncol = years + 1) 
+
+N.projections[, 1] <- N0
+
+for (i in 1:years) N.projections[, i + 1] <- 
+  A %*% N.projections[, i]
+```
+
+---
+#Graficamos nuestra población
+
+```{r, fig.cap= "Dinámica de la población de hierba moteada", fig.height=5, fig.width=4}
+
+matplot(0:years, t(N.projections), type = "l", lty = 1:3, 
+        col = 1, ylab = "Abundancia por etapa", xlab = "Tiempo", cex.axis=0.8) 
+legend("topleft", legend = c("Semillas", "Adultos peque.", "Adultos grandes"), 
+       lty = 1:3, col = 1, bty = "n")
+```
+
+---
+#__Analizando la matriz de transición__
+
+Ahora con estos resultados varias preguntas vienen a la mente: 
+
+--
+
+¿Qué es lo que esta población puede hacer en el futuro? 
+
+--
+
+¿Pueden estos datos dar una idea de una estrategia de control? 
+
+--
+
+¿Qué tan seguro puedo estar en estas proyecciones?
+
+---
+#Usando nuestra matriz
+
+Podemos realizar un análisis usando eigen-análisis para estimar:
+
+--
+- $\lambda$, la tasa finita de crecimiento
+
+--
+- estructura estable de edades
+
+--
+- valor reproductivo, y
+
+--
+- las sensibilidades y elasticidades.
+
+---
+#Eigenanálisis
+
+Eigenanálisis es una técnica matemática que resume datos multivariados. Eigenanálisis es un método para transformar una matriz cuadrada en vectores ortogonales independientes y usar las partes  -los eigenvetores y sus eigenvalores-. 
+
+---
+#__Tasa finita de incremento - $\lambda$__
+
+La tasa finita anual de crecimiento asintótico es el eigenvalor dominante de la matriz de transición. 
+
+--
+```{r, warning=FALSE}
+eigs.A <- eigen(A)
+dom.pos <- which.max(eigs.A[["values"]])
+
+L1 <- Re(eigs.A[["values"]][dom.pos]) 
+L1
+```
+
+---
+#Usando método de iteracion
+
+Otra forma de calcular $\lambda$ es proyectar la población muchos años y obtener el valor estabilizado de lambda.
+
+--
+1. Proyectamos la población
+
+--
+
+2. Dividimos $N_{t+1}$ para $N_t$
+
+--
+
+3. Encontramos el $\lambda$ estable
+
+---
+#Proyectamos la población y obtenemos $\lambda$
+
+```{r}
+t <- 30
+Nt <- N0/sum(N0)
+
+R.t <- numeric(t)
+
+for (i in 1:t) R.t[i] <- { 
+  Nt1 <- A %*% Nt 
+  R <- sum(Nt1)/sum(Nt)
+  Nt <- Nt1/sum(Nt1)  
+  R
+  }
+```
+
+---
+Graficamos los resultados e incluimos el valor calculado como $\lambda1$ usando el eigenanálisis.
+
+```{r, fig.cap="Cálculo de lambda  por método de iteración. El punto negro corresponde al eigenvalor calculado directamente con el eigenanálisis", fig.height=4.5 }
+par(mar = c(5, 4, 3, 2)) 
+plot(1:t, R.t, type = "b", main = quote("Convergencia" * lambda), col=rgb(0,1,0,0.8), pch=19) 
+points(t, L1, pch = 19, cex = 1.5, col=rgb(0,0,0,0.5))
+
+```
+
+---
+# __Distribución estable de estadios__
+
+La abundancia relativa de los diferentes estadios de historia de vida es llamada la distribución de estadios
+
+Una vez que una población alcanza su distribución estable de etapas crece de forma exponencial.
+
+--
+
+Una propiedad de la estructura de estadios es que, si todas las tasas demográficas se mantienen constantes, su estructura de etapas se acercará a una distribución de fase estable.
+
+--
+
+¿Cómo encontramos la distribución estable de etapas? 
+
+
+---
+# _Calculando la distribución estable de estadios_
+
+Extraemos w manteniendo solo la parte real y dividiendo esto para su suma para obtener la distribución estable de estadios.
+
+```{r}
+w <- Re(eigs.A[["vectors"]][, dom.pos]) 
+ssd <- w/sum(w) 
+round(ssd, 2)
+```
+
+---
+#Usando iteraciones
+
+```{r}
+years <- 20
+N.projections <- matrix(0, nrow = nrow(A), ncol = years + 1) 
+N.projections[, 1] <- N0
+
+for (i in 1:years) N.projections[, i + 1] <- A %*% N.projections[, i]
+```
+
+---
+
+#Proporción de individuos en cada estadio
+
+```{r}
+x<- rep(colSums(N.projections),each = 3, times = 1)
+ssd1<- round(N.projections/x, 2)
+```
+
+--
+
+Graficamos la proporción de individuos en cada estadio
+
+```{r, fig.cap="Variación de la proporción de individuos en cada estadio con el tiempo", fig.height=4}
+
+matplot(t(ssd1), type="l",
+        ylab="Proporcion de estadios",
+        xlab="tiempo")
+```
+
+---
+#Extraemos los datos
+
+```{r}
+round(ssd, 2); ssd1[,21]
+```
+
+---
+# __Valor reproductivo__
+
+Si la estructura de estadios nos da una medida de la importancia de una etapa (la abundancia), entonces el valor reproductivo nos da una medida de la importancia de un individuo en cada etapa. 
+
+__El valor reproductivo es la contribución esperada de cada individuo a la reproducción presente y futura.__ 
+
+---
+# _Calculando el valor reproductivo_
+
+Obtenemos los eigenvalores y eigenvectores que quedan de realizar el eigenanálisis de la matriz de transición _transpuesta_. 
+
+```{r}
+
+M <- eigen(t(A)) 
+v <- Re(M$vectors[, which.max(Re(M$values))])  
+RV <- v/v[1] 
+RV
+
+```
+
+Aquí vemos un patrón común, el valor reproductivo, _v_, aumenta con la edad. 
+---
+# _La sensibilidad y la elasticidad_
+
+La sensibilidad y elasticidad nos dicen la importancia relativa de cada transición (cada flecha del diagrama de ciclo de vida) en la determinación de $\lambda$. 
+
+--
+
+Combinación de la estructura  estable de estadios y los valores reproductivos. 
+
+--
+<br></br>
+.pull-left[La distribución estable de estadios proporciona la abundancia relativa de los individuos en cada etapa.] 
+
+.pull-rigth[El valor reproductor ofrece información sobre la contribución para el futuro crecimiento de la población de individuos en cada etapa. ]
+
+--
+<br></br>
+<br></br>
+
+> La sensibilidad y elasticidad combinan éstos para decirnos la importancia relativa de cada transición en la determinación de $\lambda$. 
+
+---
+#Las sensibilidades
+
+Las sensibilidades de una matriz poblacional implica la contribución directa de cada transición para determinar $\lambda$. 
+
+---
+# _Calculando la Sensibilidad_
+
+Primero calculamos ($ v_{ij}*w_{ij} $)
+
+_v_: valor reproductor
+_w_: estructura estable de edades
+
+Para hacer este calculo multiplicamos por la matriz traspuesta.
+
+```{r}
+vw.s<- v%*%t(w)
+
+```
+Ahora  calculamos ( $v*w$ ) y dividimos ( $v_{ij}*w_{ij}$ ) para ( $v*w$ ) y  obtenemos las sensibilidades. 
+
+```{r}
+S <- vw.s/as.numeric(v %*% w)
+round(S, 3)
+```
+
+---
+#Elasticidades
+
+Las elasticidades son sensibilidades ponderadas por las probabilidades de transición. La sensibilidad es alta cuando el valor reproductivo y/o la distribución estable de edades son altos. 
+
+--
+Podemos estar interesados en saber cómo un cambio proporcional en un elemento de transición influye lambda, por ejemplo ¿cómo un aumento del 10% en la producción de semillas, o una disminución del 25% en la supervivencia juvenil influencia $\lambda$?
+
+---
+#Calculando elasticidades
+
+```{r}
+elas <- (A/L1) * S 
+round(elas, 3)
+
+```
+
+--
+El mismo cambio proporcional en cualquiera de las transiciones dará lugar a aproximadamente el mismo cambio en $\lambda$. 
+
+---
+#Interpretación
+
+Una vez que tenemos la sensibilidad y elasticidad, podemos empezar a ver como se puede controlar la tasa de crecimiento de una población estructurada. Estos valores nos dicen cuales etapas y transiciones producen un mayor efecto en $\lambda$. 
+
+Esto es particularmente importante en el manejo de las especies invasoras (o en peligro de extinción) en el que buscan tener el máximo impacto con la cantidad mínima de esfuerzo y recursos.
