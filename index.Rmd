@@ -11,7 +11,6 @@ output:
     toc: yes
     toc_float:
       smooth_scroll: no
-  runtime: shiny
 ---
 ```{r, echo=FALSE, warning=FALSE, fig.margin = TRUE, fig.height=3, fig.width=2}
 library(png)
